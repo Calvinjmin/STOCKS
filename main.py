@@ -1,19 +1,23 @@
 import pyfiglet
 import platform
+import money
 import yfinance as yf
+import func as f
+
 
 option_Display = "\nThe following options are available in this script (Type the number):" \
                  "\n1 - Display the current portfolio with their current market price." \
                  "\n2 - Add a stock to the portfolio." \
                  "\n3 - Remove a stock from the portfolio." \
-                 "\n4 - View the profit of each stock given a period of time\n" \
-                 "\nType 'indv' to access specific functions" \
+                 "\n4 - View the profit of each stock given a period of time.\n" \
+                 "\nType '$' to access functions that manipulate your current funds." \
+                 "\nType 'indv' to access specific functions." \
                  "\nType 'quit' to terminate the program.\n"
 
-condense_Port_Display = "\n1 - Display Portfolio.  2 - Add stock.  " \
+condense_Port_Display = "1 - Display Portfolio.  2 - Add stock.  " \
                         "\n3 - Remove stock.  4 - View profits" \
-                        "\n'indv' - Specific Functions  'quit' - End Program\n"
-
+                        "\n'indv' - Specific Functions  '$' - Funds" \
+                        "\n'quit' - End Program\n"
 
 # Initializes the script
 print(pyfiglet.figlet_format('STOCKS'))
@@ -22,13 +26,16 @@ print('Yahoo Finance  = ' + yf.__version__)
 
 
 def main():
-    import func as f
+    m = money.Money()
+    print(m.display_funds())
     option = input(option_Display)
     while True:
         if option == 'quit':
             break
         elif option == 'indv':
             f.indv()
+        elif option == '$':
+            m.money_main()
         elif option == '1':
             f.display_portfolio()
         elif option == '2':
@@ -41,6 +48,7 @@ def main():
             f.calc_average(period)
         else:
             print("Invalid Input...Try Again\n")
+        print( m.display_funds())
         option = input(condense_Port_Display)
 
 

@@ -2,7 +2,8 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 
 portfolio = []
-stock_Display = "\n1 - Display a graph that shows the profit of the stock in a given period." \
+stock_Display = "\nThe following options are currently available (Type the number):" \
+                "\n1 - Display a graph that shows the profit of the stock in a given period." \
                 "\n2 - Display a five day period report of the stock" \
                 "\n3 - View the website url for the stock." \
                 "\nType 'change' to modify the current stock" \
