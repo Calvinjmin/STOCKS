@@ -7,10 +7,11 @@ what it would be like to have money currently invested in the stock market. The 
 I started this small project to work with an open-source API and learn how to program in a scripting language.
 
 ### Future
--  Implement a watch-list function into the simulation
 -  Implement a Graphical User Interface (GUI)
--  Uses an external database to store a user's portfolio
--  Learn more about Python --> Clean Code --> Organize! 
+-  Use web requests to populate current information about a stock
+-  Link script to an open-source news outlet about stocks
+-  Use an external database to store a user's portfolio
+-  Learn more about Python --> Cleaning up the code --> Organize structure! 
 
 ### Credits
 The following link will help you set-up an environment to use Yahoo Finance: https://pypi.org/project/yfinance/

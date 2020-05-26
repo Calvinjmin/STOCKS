@@ -4,11 +4,13 @@ import money
 import yfinance as yf
 import portfolio
 import stock
+import watch_list
 
 display = "\nThe following options are available in this script (Type the number): " \
           "\n1 - Manipulate Portfolio" \
           "\n2 - Manipulate Funds" \
-          "\n3 - Information about an individual stock" \
+          "\n3 - Manipulate a Watch List" \
+          "\n4 - Information about an individual stock" \
           "\nType 'quit' to terminate the program.\n"
 
 # Initializes the script
@@ -19,8 +21,10 @@ print('Yahoo Finance  = ' + yf.__version__)
 
 def main():
     m = money.Money()
-    m.print_funds()
     port = portfolio.Portfolio(m)
+    wl = watch_list.Watch_List()
+
+    m.print_funds()
     option = input(display)
 
     while True:
@@ -29,9 +33,14 @@ def main():
         elif option == '2':
             m.money_main()
         elif option == '3':
+            wl.main()
+        elif option == '4':
             ipt = input("Would you like to see your current portfolio? (Y/N)  ").upper()
             if ipt == 'Y':
                 port.print_portfolio()
+            ipt = input("Would you like to see your current watch list? (Y/N)  ").upper()
+            if ipt == 'Y':
+                wl.print_wl()
             stock_ipt = input("Please type the ticker symbol of a stock.  ").upper()
             try:
                 stock.Stock(stock_ipt).stock_main()

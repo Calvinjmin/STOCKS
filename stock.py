@@ -9,9 +9,9 @@ stock_Display = "\nThe following options are currently available (Type the numbe
                 "\nType 'return' to go back to the main options.\n"
 
 class Stock:
-    def __init__(self, name):
-        temp_stock = yf.Ticker(name)
-        self.ticker = name
+    def __init__(self, ticker):
+        temp_stock = yf.Ticker(ticker)
+        self.ticker = ticker
         self.name = str(temp_stock.info['shortName'])
         self.price = temp_stock.info['regularMarketPrice']
 
