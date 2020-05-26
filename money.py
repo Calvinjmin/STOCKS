@@ -1,27 +1,29 @@
-money_display = """"The following options are currently available (Type the number):" 
-                "1 - Deposit Money" 
-                "2 - Withdraw Money"""
-
+money_display = "\nThe following options are currently available (Type the number):" \
+                "\n1 - Deposit Money" \
+                "\nType 'return' to go back to the main options.\n"
 
 class Money:
     def __init__(self):
         self.funds = 0
 
     def money_main(self):
-        print(self.funds)
-        value = input("value: ")
-        self.funds = self.funds + int(value)
-        print(self.funds)
+        option = input(money_display)
+        while True:
+            if option == '1':
+                depo = int(input("\nHow much money would you like to deposit?  "))
+                self.deposit(depo)
+                self.print_funds()
+            elif option == 'return':
+                return
+            else:
+                print("Invalid Input...\n")
+            option = input(money_display)
 
-    def display_funds(self):
-        return "\n-----CURRENT FUNDS----- " + str(self.funds)
+    def print_funds(self):
+        print("\n-----CURRENT FUNDS----- " + str(self.funds))
 
-    """"
-    option = input(money_display)
-    if option == '1':
-        deposit()
-    elif option == '2':
-        print("Withdraw")
-    else:
-        print(str(money) + "Testing import")
-    """
+    def get_funds(self):
+        return self.funds
+
+    def deposit(self, value):
+        self.funds += value
