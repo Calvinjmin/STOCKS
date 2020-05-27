@@ -21,13 +21,13 @@ class Stock:
             if option == 'return':
                 return
             elif option == '1':
-                print( self.get_name() )
+                print('Short Name: ' + self.get_name())
             elif option == '2':
-                print( "Regular Market Price: $" + str(self.get_price()) )
+                print('Regular Market Price: $' + str(self.get_price()))
             elif option == '3':
                 period = input("Valid input formats - 5d,1mo,3mo,6mo,1y"
                                "\nPlease input a period of time: ")
-                self.plot_average(period, self.ticker )
+                self.plot_average(period, self.ticker)
             elif option == '4':
                 self.print_five_day_period(self.ticker)
             else:

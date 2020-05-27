@@ -4,13 +4,13 @@ money_display = "\nThe following options are currently available (Type the numbe
 
 class Money:
     def __init__(self):
-        self.funds = 0
+        self.funds = 0.0
 
     def money_main(self):
         option = input(money_display)
         while True:
             if option == '1':
-                depo = int(input("\nHow much money would you like to deposit?  "))
+                depo = int(input("How much money would you like to deposit?  "))
                 self.deposit(depo)
                 self.print_funds()
             elif option == 'return':
@@ -20,10 +20,10 @@ class Money:
             option = input(money_display)
 
     def print_funds(self):
-        print("\n-----CURRENT FUNDS----- " + str(self.funds))
+        print("\n-----CURRENT FUNDS----- " + str(float(self.funds)))
 
     def get_funds(self):
         return self.funds
 
     def deposit(self, value):
-        self.funds += value
+        self.funds += float(value)

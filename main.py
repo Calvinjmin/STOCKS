@@ -24,6 +24,7 @@ def main():
     port = portfolio.Portfolio(m)
     wl = watch_list.Watch_List()
 
+    m.deposit(100)
     m.print_funds()
     option = input(display)
 
@@ -44,9 +45,9 @@ def main():
             stock_ipt = input("Please type the ticker symbol of a stock.  ").upper()
             try:
                 stock.Stock(stock_ipt).stock_main()
-            except (AttributeError, IndexError) as e:
-                print(str(stock_ipt) + ' is not a valid ticker symbol in Yahoo Finance.'
-                           '\n  Or the given ticker symbol is not supported by the yfinance API.')
+            except (AttributeError, IndexError, KeyError) as e:
+                print("\n" + str(stock_ipt) + ' is not a valid ticker symbol in Yahoo Finance ' 
+                           'or the given ticker symbol is not supported by the yfinance API.')
 
         elif option == 'quit':
             return

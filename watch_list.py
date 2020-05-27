@@ -31,7 +31,7 @@ class Watch_List:
 
     def print_wl(self):
         if not self.stocks:
-            print("The current watch list is empty.")
+            print("--The current watch list is empty--")
         else:
             for (ticker, short_name) in self.stocks:
                 temp_stock = stock.Stock(ticker)
