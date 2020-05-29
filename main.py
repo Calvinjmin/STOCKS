@@ -5,15 +5,15 @@ import yfinance as yf
 import portfolio
 import stock
 import watch_list
+import gui
 
-display = "The following options are available in this script (Type the number): "\
+display = "The following options are available in this script (Type the number): " \
           "\n1 - Manipulate Portfolio" \
           "\n2 - Manipulate Funds" \
           "\n3 - Manipulate a Watch List" \
           "\n4 - Information about an individual stock" \
           "\nType 'quit' to terminate the program." \
           "\nType 'gui' to use the GUI Version!\n"
-
 
 # Initializes the script
 print(pyfiglet.figlet_format('STOCKS'))
@@ -22,11 +22,12 @@ print('Yahoo Finance  = ' + yf.__version__)
 
 
 def main():
+    # Initialize Variables (Imports)
     m = money.Money()
     port = portfolio.Portfolio(m)
     wl = watch_list.Watch_List()
 
-    m.deposit(100)
+    # Main Text Display
     m.print_funds()
     option = input(display)
 
@@ -48,10 +49,10 @@ def main():
             try:
                 stock.Stock(stock_ipt).stock_main()
             except (AttributeError, IndexError, KeyError) as e:
-                print("\n" + str(stock_ipt) + ' is not a valid ticker symbol in Yahoo Finance ' 
-                           'or the given ticker symbol is not supported by the yfinance API.')
-
-        elif option == 'gui' :
+                print("\n" + str(stock_ipt) + ' is not a valid ticker symbol in Yahoo Finance '
+                                              'or the given ticker symbol is not supported by the yfinance API.')
+        elif option == 'gui':
+            gui.main(m,port,wl)
             print("This feature has not been implemented yet!")
         elif option == 'quit':
             return
@@ -59,44 +60,6 @@ def main():
         option = input(display)
 
 
-main()
-print("Thank you for using my script! - Calvin M.")
-
-# function_mapping = {'1': f.display_portfolio(), '2': f.add_stock(), '3': f.remove_stock()}
-"""
-option_Display = "\nThe following options are available in this script (Type the number):" \
-             "\n1 - Display the current portfolio with their current market price." \
-             "\n2 - Add a stock to the portfolio." \
-             "\n3 - Remove a stock from the portfolio." \
-             "\n4 - View the profit of each stock given a period of time.\n" \
-             "\nType '$' to access functions that manipulate your current funds." \
-             "\nType 'indv' to access specific functions." \
-             "\nType 'quit' to terminate the program.\n"
-
-condense_Port_Display = "1 - Display Portfolio.  2 - Add stock.  " \
-                    "\n3 - Remove stock.  4 - View profits" \
-                    "\n'indv' - Specific Functions  '$' - Funds" \
-                    "\n'quit' - End Program\n"
-                    
-while True:
-    if option == 'quit':
-        break
-    elif option == 'indv':
-        f.indv()
-    elif option == '$':
-        m.money_main()
-    elif option == '1':
-        f.display_portfolio()
-    elif option == '2':
-        f.add_stock()
-    elif option == '3':
-        f.remove_stock()
-    elif option == '4':
-        period = input("Valid input formats - 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max"
-                       "\nPlease input a period of time: ")
-        f.calc_average(period)
-    else:
-        print("Invalid Input...Try Again\n")
-    print(m.get_funds())
-    option = input(condense_Port_Display)
-"""
+if __name__ == '__main__':
+    main()
+    print("Thank you for using my script! - Calvin M.")
