@@ -6,12 +6,14 @@ import portfolio
 import stock
 import watch_list
 
-display = "\nThe following options are available in this script (Type the number): " \
+display = "The following options are available in this script (Type the number): "\
           "\n1 - Manipulate Portfolio" \
           "\n2 - Manipulate Funds" \
           "\n3 - Manipulate a Watch List" \
           "\n4 - Information about an individual stock" \
-          "\nType 'quit' to terminate the program.\n"
+          "\nType 'quit' to terminate the program." \
+          "\nType 'gui' to use the GUI Version!\n"
+
 
 # Initializes the script
 print(pyfiglet.figlet_format('STOCKS'))
@@ -49,6 +51,8 @@ def main():
                 print("\n" + str(stock_ipt) + ' is not a valid ticker symbol in Yahoo Finance ' 
                            'or the given ticker symbol is not supported by the yfinance API.')
 
+        elif option == 'gui' :
+            print("This feature has not been implemented yet!")
         elif option == 'quit':
             return
         m.print_funds()
