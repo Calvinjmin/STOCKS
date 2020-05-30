@@ -11,7 +11,9 @@ Version 2.X - GIT commits with this header pertain to the GUI version.
 I started this small project to work with an open-source API and learn how to program in a scripting language.
 
 ### Future
--  Implement a Graphical User Interface (GUI)
+- <s> Implement a Graphical User Interface (GUI) </s>
+-  Integrate main.py with gui.py (Implement Functions)
+-  Mirror GUI Layout with the text layout
 -  Use web requests to populate current information about a stock
 -  Link script to an open-source news outlet about stocks
 -  Use an external database to store a user's portfolio
