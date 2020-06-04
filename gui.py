@@ -1,10 +1,8 @@
 # Reference for tkinter - https://realpython.com/python-gui-tkinter/
 
 from tkinter import *
-import money
-import portfolio
-import watch_list
 
+# REFERENCE STRINGS
 intro = """Welcome to STOCKS!
         This script will be a simulation of the current stock market."""
 
@@ -101,7 +99,7 @@ class MainGUI:
         self.stock_info_message.grid(row=4, column=4)
 
         ### Option Widgets ###
-        ## UPCOMING CHANGES
+        ## UPCOMING CHANGES ##
 
     def set_window_title(self, title):
         self.window.title(title)
