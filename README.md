@@ -17,6 +17,7 @@ I started this small project to work with an open-source API and learn how to pr
 -  Use web requests to populate current information about a stock
 -  Link script to an open-source news outlet about stocks
 -  Use an external database to store a user's portfolio
+-  Keep Commenting Code/Documenting Information
 -  Learn more about Python --> Cleaning up the code --> Organize structure! 
 
 ### Credits
