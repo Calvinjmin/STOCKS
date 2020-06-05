@@ -6,6 +6,7 @@ stock_Display = "\nThe following options are currently available (Type the numbe
                 "\n2 - View the regular market price" \
                 "\n3 - Display a graph that shows the profit of the stock in a given period." \
                 "\n4 - Display a five day period report of the stock" \
+                "\n5 - Query Information online about the stock using the Ticker Symbol." \
                 "\nType 'return' to go back to the main options.\n"
 
 class Stock:
@@ -30,6 +31,8 @@ class Stock:
                 self.plot_average(period, self.ticker)
             elif option == '4':
                 self.print_five_day_period(self.ticker)
+            elif option == '5':
+                self.google_search()
             else:
                 print("Invalid Input...\n")
             option = input( stock_Display )
@@ -57,3 +60,14 @@ class Stock:
         plt.xlabel('Date (Year-Month-Day)')
         plt.ylabel('Net Profit (USD)')
         plt.show()
+
+    def google_search(self):
+        query = self.ticker
+        try:
+            from googlesearch import search
+        except ImportError:
+            print("\n--An error occurred when importing google.--\n")
+
+        print("\nKeyword being search on google: " + query )
+        for j in search(query, tld="co.in", num=10, stop=10, pause=2):
+            print(j)
