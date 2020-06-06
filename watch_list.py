@@ -1,5 +1,6 @@
 import stock
 
+# Variable for the text displayed when watch_list.py is initialized
 wl_display = "\nThe following options are currently available (Type the number):" \
              "\n1 - View current watch list" \
              "\n2 - Add a stock" \

@@ -1,6 +1,7 @@
 import yfinance as yf
 import matplotlib.pyplot as plt
 
+# Variable for the text displayed with stock.py is initialized
 stock_Display = "\nThe following options are currently available (Type the number):" \
                 "\n1 - View the short name of the stock" \
                 "\n2 - View the regular market price" \

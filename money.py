@@ -1,7 +1,9 @@
+# Variable for the text displayed with money.py is initialized
 money_display = "\nThe following options are currently available (Type the number):" \
                 "\n1 - Deposit Money" \
                 "\nType 'return' to go back to the main options.\n"
 
+# Class for money.py
 class Money:
     def __init__(self):
         self.funds = 0.0

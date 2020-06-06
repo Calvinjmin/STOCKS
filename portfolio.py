@@ -1,5 +1,6 @@
 import stock
 
+# Variable for the text displayed when portfolio.py is initialized
 portfolio_Display = "\nThe following operations are available (Type the number): " \
                     "\n1 - View your current portfolio. " \
                     "\n2 - Purchase a stock from Yahoo Finance." \

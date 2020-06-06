@@ -7,6 +7,7 @@ import stock
 import watch_list
 import gui
 
+# Variable for the text displayed when main.py is initialized
 display = "The following options are available in this script (Type the number): " \
           "\n1 - Manipulate Portfolio" \
           "\n2 - Manipulate Funds" \

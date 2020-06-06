@@ -1,4 +1,5 @@
 # Reference for tkinter - https://realpython.com/python-gui-tkinter/
+# Reference for Login/Register - https://www.youtube.com/watch?v=Xt6SqWuMSA8
 
 from tkinter import *
 
@@ -28,6 +29,12 @@ class MainGUI:
     def __init__(self, master, money, portfolio, watch_list):
         ### Window ###
         self.window = master
+
+        self.login_screen = Toplevel(self.window)
+        self.login_screen.title("Login/Register")
+        self.login_screen.geometry("400x400")
+        self.login_screen.protocol("WM_DELETE_WINDOW", self.reset_login)
+        self.login_screen.withdraw()
 
         ### Frame ###
         self.frame = Frame(master=master)
@@ -98,11 +105,33 @@ class MainGUI:
         self.stock_info_message = Label(textvariable=self.stock_info_str)
         self.stock_info_message.grid(row=4, column=4)
 
-        ### Option Widgets ###
-        ## UPCOMING CHANGES ##
+        # - Row 5 - #
+        self.login_register_button = Button(text="Login/Register", command=self.login_display)
+        self.login_register_button.grid(row=5, column=2, sticky='nsew')
+
+        ### Variables ###
+        self.username = StringVar()
+        self.password = StringVar()
 
     def set_window_title(self, title):
         self.window.title(title)
+
+    def login_display(self):
+        self.login_screen.deiconify()
+        Label(self.login_screen, text="Username:").pack()
+        Entry(self.login_screen, textvariable=self.username).pack()
+        Label(self.login_screen, text="Password:").pack()
+        Entry(self.login_screen, textvariable=self.password).pack()
+        Button(self.login_screen, text="Login").pack()
+        Button(self.login_screen, text="Register", command=self.register_user).pack()
+
+    def register_user(self):
+        file = open("./users/" + self.username.get() + ".txt", "w")
+        file.write("Username: " + self.username.get())
+        file.write("\nPassword: " + self.password.get())
+        file.close()
+
+        Label(self.login_screen, text="Registration Successful", fg="green").pack()
 
     def hide_main_widgets(self):
         self.portfolio_button.grid()
@@ -133,6 +162,13 @@ class MainGUI:
         self.stock_info_button.grid()
         self.stock_info_message.grid()
 
+    def reset_login(self):
+        for widget in self.login_screen.winfo_children():
+            widget.destroy()
+        self.username.set("")
+        self.password.set("")
+        self.login_screen.withdraw()
+
     def port_options(self):
         self.hide_main_widgets()
 
@@ -149,6 +185,7 @@ def main(money, port, watchlist):
     window.grid_rowconfigure(2, weight=1)
     window.grid_rowconfigure(3, weight=1)
     window.grid_rowconfigure(4, weight=1)
+    window.grid_rowconfigure(5, weight=1)
     window.grid_columnconfigure(0, weight=1)
     window.grid_columnconfigure(1, weight=1)
     window.grid_columnconfigure(2, weight=1)
