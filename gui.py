@@ -1,6 +1,6 @@
 # Reference for tkinter - https://realpython.com/python-gui-tkinter/
 # Reference for Login/Register - https://www.youtube.com/watch?v=Xt6SqWuMSA8
-
+import os
 from tkinter import *
 
 # REFERENCE STRINGS
@@ -36,6 +36,12 @@ class MainGUI:
         self.login_screen.protocol("WM_DELETE_WINDOW", self.reset_login)
         self.login_screen.withdraw()
 
+        self.login_action_screen = Toplevel(self.window)
+        self.login_action_screen.title("Login Result")
+        self.login_action_screen.geometry("200x200")
+        self.login_action_screen.protocol("WM_DELETE_WINDOW", self.reset_login_result)
+        self.login_action_screen.withdraw()
+
         ### Frame ###
         self.frame = Frame(master=master)
 
@@ -44,15 +50,22 @@ class MainGUI:
         self.port = portfolio
         self.wl = watch_list
 
+        ### Variables ###
+        self.username = StringVar()
+        self.password = StringVar()
+
+        self.session_user = ""
+        self.login_success = False
+
         ### Widgets ###
 
         # - Row 0 - #
-        self.intro_text = Label(text=intro).grid(row=0, column=0, sticky='nsew', columnspan=5)
+        self.intro_text = Label(text=intro).grid(row=0, column=0,sticky='nsew',columnspan=5)
 
         # - Row 1 - #
-        self.funds_str = StringVar()
-        self.funds_str.set("Current Funds: $" + str(money.get_funds()))
-        self.funds_text = Label(textvariable=self.funds_str).grid(row=1, column=0, sticky='nsew', columnspan=5)
+        self.profile_str = StringVar()
+        self.profile_str.set("Current Funds: $" + str(self.money.get_funds()) + "\nCurrent User: " + self.session_user)
+        self.funds_text = Label(textvariable=self.profile_str).grid(row=1, column=0, sticky='nsew', columnspan=5)
 
         # - Row 2 - #
         self.type_display_str = StringVar()
@@ -109,10 +122,6 @@ class MainGUI:
         self.login_register_button = Button(text="Login/Register", command=self.login_display)
         self.login_register_button.grid(row=5, column=2, sticky='nsew')
 
-        ### Variables ###
-        self.username = StringVar()
-        self.password = StringVar()
-
     def set_window_title(self, title):
         self.window.title(title)
 
@@ -122,16 +131,51 @@ class MainGUI:
         Entry(self.login_screen, textvariable=self.username).pack()
         Label(self.login_screen, text="Password:").pack()
         Entry(self.login_screen, textvariable=self.password).pack()
-        Button(self.login_screen, text="Login").pack()
+        Button(self.login_screen, text="Login", command=self.login_user).pack()
         Button(self.login_screen, text="Register", command=self.register_user).pack()
 
     def register_user(self):
-        file = open("./users/" + self.username.get() + ".txt", "w")
-        file.write("Username: " + self.username.get())
-        file.write("\nPassword: " + self.password.get())
+        file = open("./users/" + self.username.get(), "w")
+        file.write(self.username.get())
+        file.write("\n" + self.password.get())
         file.close()
 
-        Label(self.login_screen, text="Registration Successful", fg="green").pack()
+        self.login_action(1)
+
+    def login_user(self):
+        current_user = self.username.get()
+        current_password = self.password.get()
+
+        list_of_files = os.listdir(os.path.expanduser('./users/'))
+        if current_user in list_of_files:
+            file = open("./users/" + current_user, "r")
+            verify = file.read().splitlines()
+
+            if current_password in verify:
+                self.login_action(2)
+            else:
+                self.login_action(3)
+        else:
+            self.login_action(4)
+
+    def login_action(self, action):
+        self.login_action_screen.deiconify()
+        if action == 1:
+            Label(self.login_action_screen, text="Registration Successful", fg="green").pack()
+            self.login_success = True
+            self.session_user = self.username.get()
+            self.profile_str.set("Current Funds: $" + str(self.money.get_funds()) + "\nCurrent User: " + self.session_user)
+            self.reset_login()
+        elif action == 2:
+            Label(self.login_action_screen, text="Login Successful", fg="green").pack()
+            self.login_success = True
+            self.session_user = self.username.get()
+            self.profile_str.set("Current Funds: $" + str(self.money.get_funds()) + "\nCurrent User: " + self.session_user)
+            self.reset_login()
+        elif action == 3:
+            Label(self.login_action_screen, text="Password not found", fg="red").pack()
+        elif action == 4:
+            Label(self.login_action_screen, text="User not found", fg="red").pack()
 
     def hide_main_widgets(self):
         self.portfolio_button.grid()
@@ -168,6 +212,13 @@ class MainGUI:
         self.username.set("")
         self.password.set("")
         self.login_screen.withdraw()
+
+    def reset_login_result(self):
+        for widget in self.login_action_screen.winfo_children():
+            widget.destroy()
+        self.username.set("")
+        self.password.set("")
+        self.login_action_screen.withdraw()
 
     def port_options(self):
         self.hide_main_widgets()
