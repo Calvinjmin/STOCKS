@@ -2,6 +2,7 @@
 # Reference for Login/Register - https://www.youtube.com/watch?v=Xt6SqWuMSA8
 import os
 from tkinter import *
+from termcolor import colored
 
 # REFERENCE STRINGS
 intro = """Welcome to STOCKS!
@@ -24,23 +25,47 @@ money_display = "\nThe following options are currently available (Type the numbe
                 "\n1 - Deposit Money" \
                 "\nType 'return' to go back to the main options.\n"
 
+def is_float(str_value):
+    try:
+        float(str_value)
+        return True
+    except ValueError:
+        return False
 
 class MainGUI:
     def __init__(self, master, money, portfolio, watch_list):
         ### Window ###
+
+        # Master Window
         self.window = master
 
+        # Login Window
         self.login_screen = Toplevel(self.window)
         self.login_screen.title("Login/Register")
         self.login_screen.geometry("400x400")
-        self.login_screen.protocol("WM_DELETE_WINDOW", self.reset_login)
+        self.login_screen.protocol("WM_DELETE_WINDOW", self.reset_login_screen)
         self.login_screen.withdraw()
 
+        # Login Results Window
         self.login_action_screen = Toplevel(self.window)
         self.login_action_screen.title("Login Result")
         self.login_action_screen.geometry("200x200")
-        self.login_action_screen.protocol("WM_DELETE_WINDOW", self.reset_login_result)
+        self.login_action_screen.protocol("WM_DELETE_WINDOW", self.reset_login_result_screen)
         self.login_action_screen.withdraw()
+
+        # Funds Window
+        self.funds_screen = Toplevel(self.window)
+        self.funds_screen.title("Funds")
+        self.funds_screen.geometry("400x400")
+        self.funds_screen.protocol("WM_DELETE_WINDOW", self.reset_funds_screen)
+        self.funds_screen.withdraw()
+
+        # Versatile Results Screen
+        self.result_screen = Toplevel(self.window)
+        self.result_screen.title("Results")
+        self.result_screen.geometry("200x200")
+        self.result_screen.protocol("WM_DELETE_WINDOW", self.reset_results)
+        self.result_screen.withdraw()
 
         ### Frame ###
         self.frame = Frame(master=master)
@@ -54,13 +79,15 @@ class MainGUI:
         self.username = StringVar()
         self.password = StringVar()
 
-        self.session_user = ""
+        self.session_user = "NA"
         self.login_success = False
+
+        self.funds_entry_str = StringVar()
 
         ### Widgets ###
 
         # - Row 0 - #
-        self.intro_text = Label(text=intro).grid(row=0, column=0,sticky='nsew',columnspan=5)
+        self.intro_text = Label(text=intro).grid(row=0, column=0, sticky='nsew', columnspan=5)
 
         # - Row 1 - #
         self.profile_str = StringVar()
@@ -82,7 +109,7 @@ class MainGUI:
         self.portfolio_button.grid(row=3, column=1)
 
         # Funds Button
-        self.funds_button = Button(text="Funds")
+        self.funds_button = Button(text="Funds", command=self.funds_opt)
         self.funds_button.grid(row=3, column=2)
 
         # Watch List Button
@@ -138,6 +165,7 @@ class MainGUI:
         file = open("./users/" + self.username.get(), "w")
         file.write(self.username.get())
         file.write("\n" + self.password.get())
+        file.write("\n" + str(0.00))
         file.close()
 
         self.login_action(1)
@@ -150,7 +178,6 @@ class MainGUI:
         if current_user in list_of_files:
             file = open("./users/" + current_user, "r")
             verify = file.read().splitlines()
-
             if current_password in verify:
                 self.login_action(2)
             else:
@@ -164,18 +191,29 @@ class MainGUI:
             Label(self.login_action_screen, text="Registration Successful", fg="green").pack()
             self.login_success = True
             self.session_user = self.username.get()
-            self.profile_str.set("Current Funds: $" + str(self.money.get_funds()) + "\nCurrent User: " + self.session_user)
-            self.reset_login()
+            self.update_profile()
+            self.reset_login_screen()
         elif action == 2:
             Label(self.login_action_screen, text="Login Successful", fg="green").pack()
             self.login_success = True
             self.session_user = self.username.get()
-            self.profile_str.set("Current Funds: $" + str(self.money.get_funds()) + "\nCurrent User: " + self.session_user)
-            self.reset_login()
+            self.update_profile()
+            self.reset_login_screen()
         elif action == 3:
             Label(self.login_action_screen, text="Password not found", fg="red").pack()
         elif action == 4:
             Label(self.login_action_screen, text="User not found", fg="red").pack()
+
+    def funds_opt(self):
+        self.funds_screen.deiconify()
+        if self.login_success:
+            Label(self.funds_screen, text="Options for Funds").pack()
+            Label(self.funds_screen, text="").pack()
+            Label(self.funds_screen, text="Type a numerical value to deposit").pack()
+            Entry(self.funds_screen, textvariable=self.funds_entry_str).pack()
+            Button(self.funds_screen, text="Deposit", command=self.depo_funds).pack()
+        else:
+            Label(self.funds_screen, text="You are not logged in or registered.", fg="red").pack()
 
     def hide_main_widgets(self):
         self.portfolio_button.grid()
@@ -206,27 +244,64 @@ class MainGUI:
         self.stock_info_button.grid()
         self.stock_info_message.grid()
 
-    def reset_login(self):
+    def reset_login_screen(self):
         for widget in self.login_screen.winfo_children():
             widget.destroy()
         self.username.set("")
         self.password.set("")
         self.login_screen.withdraw()
 
-    def reset_login_result(self):
+    def reset_login_result_screen(self):
         for widget in self.login_action_screen.winfo_children():
             widget.destroy()
         self.username.set("")
         self.password.set("")
         self.login_action_screen.withdraw()
+        self.update_profile()
+
+    def reset_funds_screen(self):
+        for widget in self.funds_screen.winfo_children():
+            widget.destroy()
+        self.funds_entry_str.set("")
+        self.funds_screen.withdraw()
+        self.update_profile()
+
+    def reset_results(self):
+        for widget in self.result_screen.winfo_children():
+            widget.destroy()
+        self.result_screen.withdraw()
 
     def port_options(self):
         self.hide_main_widgets()
 
-    def update_funds(self):
-        # Updates the Current Funds str
-        text = "Current Funds: $" + str(self.money.get_funds())
-        self.funds_str.set(text)
+    def update_profile(self):
+        if self.login_success:
+            file = open("./users/" + self.session_user, "r")
+            file.readline()
+            file.readline()
+            self.profile_str.set("Current Funds: $" + file.readline() + "\nCurrent User: " + self.session_user)
+        else:
+            self.profile_str.set(
+                "Current Funds: $" + str(self.money.get_funds()) + "\nCurrent User: " + self.session_user)
+
+    def depo_funds(self):
+        if is_float(self.funds_entry_str.get()):
+            list_of_files = os.listdir(os.path.expanduser('./users/'))
+            if self.session_user in list_of_files:
+                file = open("./users/" + self.session_user, "r")
+                data = file.readlines()
+                data[2] = str(float(data[2]) + float(self.funds_entry_str.get()))
+
+                file = open("./users/" + self.session_user, "w")
+                file.writelines(data)
+
+                self.result_screen.deiconify()
+                Label(self.result_screen,text="Deposit Success",fg="green").pack()
+
+            else:
+                print("An error has occurred when reading your profile from the system.")
+        else:
+            self.funds_entry_str.set("Invalid input")
 
 
 def main(money, port, watchlist):
