@@ -2,7 +2,8 @@
 # Reference for Login/Register - https://www.youtube.com/watch?v=Xt6SqWuMSA8
 import os
 from tkinter import *
-from termcolor import colored
+from tkhtmlview import HTMLLabel
+import webbrowser
 
 # REFERENCE STRINGS
 intro = """Welcome to STOCKS!
@@ -21,9 +22,6 @@ portfolio_Display = "\nThe following operations are available (Type the number):
                     "\n3 - Sell a stock from your portfolio." \
                     "\nType 'return' to go back to the main options.\n"
 
-money_display = "\nThe following options are currently available (Type the number):" \
-                "\n1 - Deposit Money" \
-                "\nType 'return' to go back to the main options.\n"
 
 def is_float(str_value):
     try:
@@ -31,6 +29,11 @@ def is_float(str_value):
         return True
     except ValueError:
         return False
+
+
+def callback(url):
+    webbrowser.open(url)
+
 
 class MainGUI:
     def __init__(self, master, money, portfolio, watch_list):
@@ -87,67 +90,69 @@ class MainGUI:
         ### Widgets ###
 
         # - Row 0 - #
-        self.intro_text = Label(text=intro).grid(row=0, column=0, sticky='nsew', columnspan=5)
+        self.intro_text = Label(text=intro).grid(row=0, column=0, sticky='nsew', columnspan=4)
 
         # - Row 1 - #
         self.profile_str = StringVar()
         self.profile_str.set("Current Funds: $" + str(self.money.get_funds()) + "\nCurrent User: " + self.session_user)
-        self.funds_text = Label(textvariable=self.profile_str).grid(row=1, column=0, sticky='nsew', columnspan=5)
+        self.funds_text = Label(textvariable=self.profile_str).grid(row=1, column=0, sticky='nsew', columnspan=4)
 
         # - Row 2 - #
         self.type_display_str = StringVar()
-        self.type_display_str.set("Main Display")
-        self.type_display = Label(textvariable=self.type_display_str).grid(row=2, column=0, sticky='nsew', columnspan=5)
+        self.type_display_str.set("Main Menu")
+        self.type_display = Label(textvariable=self.type_display_str).grid(row=2, column=0, sticky='nsew', columnspan=4)
 
         # - Row 3 - #
-        # Main Menu Button
-        self.reset_button = Button(text="Main Menu", command=self.reset_gui)
-        self.reset_button.grid(row=3, column=0)
 
         # Portfolio Button
         self.portfolio_button = Button(text="Portfolio")
-        self.portfolio_button.grid(row=3, column=1)
+        self.portfolio_button.grid(row=3, column=0)
 
         # Funds Button
         self.funds_button = Button(text="Funds", command=self.funds_opt)
-        self.funds_button.grid(row=3, column=2)
+        self.funds_button.grid(row=3, column=1)
 
         # Watch List Button
         self.wl_button = Button(text="Watch Lists")
-        self.wl_button.grid(row=3, column=3)
+        self.wl_button.grid(row=3, column=2)
 
         # Stock Info. Button
         self.stock_info_button = Button(text="Indv. Stock")
-        self.stock_info_button.grid(row=3, column=4)
+        self.stock_info_button.grid(row=3, column=3)
 
         # - Row 4 - #
         # Portfolio Label
         self.port_str = StringVar()
         self.port_str.set("Manipulate your the portfolio.")
         self.port_message = Label(textvariable=self.port_str)
-        self.port_message.grid(row=4, column=1)
+        self.port_message.grid(row=4, column=0)
 
         # Funds Label
         self.funds_str = StringVar()
         self.funds_str.set("Access options to your funds.")
         self.funds_message = Label(textvariable=self.funds_str)
-        self.funds_message.grid(row=4, column=2)
+        self.funds_message.grid(row=4, column=1)
 
         # Watch List Label
         self.wl_str = StringVar()
         self.wl_str.set("Manipulate your watch lists.")
         self.wl_message = Label(textvariable=self.wl_str)
-        self.wl_message.grid(row=4, column=3)
+        self.wl_message.grid(row=4, column=2)
 
         # Stock Info. Label
         self.stock_info_str = StringVar()
         self.stock_info_str.set("Access info. about a single stock.")
         self.stock_info_message = Label(textvariable=self.stock_info_str)
-        self.stock_info_message.grid(row=4, column=4)
+        self.stock_info_message.grid(row=4, column=3)
 
         # - Row 5 - #
         self.login_register_button = Button(text="Login/Register", command=self.login_display)
-        self.login_register_button.grid(row=5, column=2, sticky='nsew')
+        self.login_register_button.grid(row=5, column=0, sticky='nsew')
+
+        self.google_entry_str = StringVar()
+        self.google_entry_str.set('')
+        self.google_entry = Entry(textvariable=self.google_entry_str).grid(row=5, column=2)
+        self.google_entry_button = Button(text="Google Search", command=self.google_search).grid(row=5, column=3)
 
     def set_window_title(self, title):
         self.window.title(title)
@@ -215,6 +220,55 @@ class MainGUI:
         else:
             Label(self.funds_screen, text="You are not logged in or registered.", fg="red").pack()
 
+    def google_search(self):
+        try:
+            from googlesearch import search
+        except ImportError:
+            print("An error when importing googlesearch has occurred.")
+            return
+        query = self.google_entry_str.get()
+        self.result_screen.deiconify()
+        self.result_screen.geometry("700x500")
+        Label(self.result_screen, text="A list of URL's compiled by google.").pack()
+        Label(self.result_screen, text="Keyword Searched: " + query).pack()
+
+        for j in search(query, tld="co.in", num=5, stop=5):
+            temp_label = HTMLLabel(self.result_screen, html='<a href="' + j + '">' + j + '</a>', fg="blue")
+            temp_label.config(height=5)
+            temp_label.pack()
+
+    def port_options(self):
+        self.hide_main_widgets()
+
+    def update_profile(self):
+        if self.login_success:
+            file = open("./users/" + self.session_user, "r")
+            file.readline()
+            file.readline()
+            self.profile_str.set("Current Funds: $" + file.readline() + "\nCurrent User: " + self.session_user)
+        else:
+            self.profile_str.set(
+                "Current Funds: $" + str(self.money.get_funds()) + "\nCurrent User: " + self.session_user)
+
+    def depo_funds(self):
+        if is_float(self.funds_entry_str.get()):
+            list_of_files = os.listdir(os.path.expanduser('./users/'))
+            if self.session_user in list_of_files:
+                file = open("./users/" + self.session_user, "r")
+                data = file.readlines()
+                data[2] = str(float(data[2]) + float(self.funds_entry_str.get()))
+
+                file = open("./users/" + self.session_user, "w")
+                file.writelines(data)
+
+                self.result_screen.deiconify()
+                Label(self.result_screen, text="Deposit Success", fg="green").pack()
+
+            else:
+                print("An error has occurred when reading your profile from the system.")
+        else:
+            self.funds_entry_str.set("Invalid input")
+
     def hide_main_widgets(self):
         self.portfolio_button.grid()
         self.port_message.grid_remove()
@@ -227,22 +281,6 @@ class MainGUI:
 
         self.stock_info_button.grid_remove()
         self.stock_info_message.grid_remove()
-
-    def reset_gui(self):
-        self.type_display_str.set("Main Display")
-
-        # Restore Buttons and Text
-        self.portfolio_button.grid()
-        self.port_message.grid()
-
-        self.funds_button.grid()
-        self.funds_message.grid()
-
-        self.wl_button.grid()
-        self.wl_message.grid()
-
-        self.stock_info_button.grid()
-        self.stock_info_message.grid()
 
     def reset_login_screen(self):
         for widget in self.login_screen.winfo_children():
@@ -271,38 +309,6 @@ class MainGUI:
             widget.destroy()
         self.result_screen.withdraw()
 
-    def port_options(self):
-        self.hide_main_widgets()
-
-    def update_profile(self):
-        if self.login_success:
-            file = open("./users/" + self.session_user, "r")
-            file.readline()
-            file.readline()
-            self.profile_str.set("Current Funds: $" + file.readline() + "\nCurrent User: " + self.session_user)
-        else:
-            self.profile_str.set(
-                "Current Funds: $" + str(self.money.get_funds()) + "\nCurrent User: " + self.session_user)
-
-    def depo_funds(self):
-        if is_float(self.funds_entry_str.get()):
-            list_of_files = os.listdir(os.path.expanduser('./users/'))
-            if self.session_user in list_of_files:
-                file = open("./users/" + self.session_user, "r")
-                data = file.readlines()
-                data[2] = str(float(data[2]) + float(self.funds_entry_str.get()))
-
-                file = open("./users/" + self.session_user, "w")
-                file.writelines(data)
-
-                self.result_screen.deiconify()
-                Label(self.result_screen,text="Deposit Success",fg="green").pack()
-
-            else:
-                print("An error has occurred when reading your profile from the system.")
-        else:
-            self.funds_entry_str.set("Invalid input")
-
 
 def main(money, port, watchlist):
     window = Tk()
@@ -316,7 +322,6 @@ def main(money, port, watchlist):
     window.grid_columnconfigure(1, weight=1)
     window.grid_columnconfigure(2, weight=1)
     window.grid_columnconfigure(3, weight=1)
-    window.grid_columnconfigure(4, weight=1)
 
     gui = MainGUI(window, money, port, watchlist)
     gui.set_window_title("STOCKS")
