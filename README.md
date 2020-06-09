@@ -10,10 +10,14 @@ Version 2.X - GIT commits with this header pertain to the GUI version.
 ### Motivation 
 I started this small project to work with an open-source API and learn how to program in a scripting language.
 
+### Completion
+- Fully functional text-based version (No login)
+- Created a graphical user interface for STOCKS
+- Implemented a file login system
+
 ### Future
--  Integrate main.py with gui.py (Implement Functions)
+-  **Integrate main.py with gui.py (Implement Functionality)**
 -  Link script to an open-source news outlet about stocks
--  Use an external database to store a user's portfolio
 -  Keep Commenting Code/Documenting Information
 -  Learn more about Python --> Cleaning up the code --> Organize structure! 
 
