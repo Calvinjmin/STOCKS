@@ -56,12 +56,12 @@ class MainGUI:
         self.login_action_screen.protocol("WM_DELETE_WINDOW", self.reset_login_result_screen)
         self.login_action_screen.withdraw()
 
-        # Funds Window
-        self.funds_screen = Toplevel(self.window)
-        self.funds_screen.title("Funds")
-        self.funds_screen.geometry("400x400")
-        self.funds_screen.protocol("WM_DELETE_WINDOW", self.reset_funds_screen)
-        self.funds_screen.withdraw()
+        # Versatile Option Window
+        self.opt_screen = Toplevel(self.window)
+        self.opt_screen.title("Option")
+        self.opt_screen.geometry("400x400")
+        self.opt_screen.protocol("WM_DELETE_WINDOW", self.reset_opt_screen)
+        self.opt_screen.withdraw()
 
         # Versatile Results Screen
         self.result_screen = Toplevel(self.window)
@@ -87,6 +87,11 @@ class MainGUI:
 
         self.funds_entry_str = StringVar()
 
+        self.port_entry_str = StringVar()
+        self.port_entry_str.set("Ticker Symbol")
+        self.port_amount_str = StringVar()
+        self.port_amount_str.set("Numerical Amount")
+
         ### Widgets ###
 
         # - Row 0 - #
@@ -105,7 +110,7 @@ class MainGUI:
         # - Row 3 - #
 
         # Portfolio Button
-        self.portfolio_button = Button(text="Portfolio")
+        self.portfolio_button = Button(text="Portfolio", command=self.port_opt)
         self.portfolio_button.grid(row=3, column=0)
 
         # Funds Button
@@ -171,6 +176,7 @@ class MainGUI:
         file.write(self.username.get())
         file.write("\n" + self.password.get())
         file.write("\n" + str(0.00))
+        file.write("\n")
         file.close()
 
         self.login_action(1)
@@ -210,15 +216,34 @@ class MainGUI:
             Label(self.login_action_screen, text="User not found", fg="red").pack()
 
     def funds_opt(self):
-        self.funds_screen.deiconify()
+        self.opt_screen.deiconify()
+        self.opt_screen.title("Funds")
         if self.login_success:
-            Label(self.funds_screen, text="Options for Funds").pack()
-            Label(self.funds_screen, text="").pack()
-            Label(self.funds_screen, text="Type a numerical value to deposit").pack()
-            Entry(self.funds_screen, textvariable=self.funds_entry_str).pack()
-            Button(self.funds_screen, text="Deposit", command=self.depo_funds).pack()
+            Label(self.opt_screen, text="Options for Funds").pack()
+            Label(self.opt_screen, text="").pack()
+            Label(self.opt_screen, text="Type a numerical value to deposit").pack()
+            Entry(self.opt_screen, textvariable=self.funds_entry_str).pack()
+            Button(self.opt_screen, text="Deposit", command=self.depo_funds).pack()
         else:
-            Label(self.funds_screen, text="You are not logged in or registered.", fg="red").pack()
+            Label(self.opt_screen, text="You are not logged in or registered.", fg="red").pack()
+
+    def port_opt(self):
+        self.opt_screen.deiconify()
+        self.opt_screen.title("Portfolio")
+        if self.login_success:
+            Label(self.opt_screen, text="Current Portfolio").pack()
+            temp_port = self.read_portfolio()
+            Label(self.opt_screen, text=str(temp_port)).pack()
+            Label(self.opt_screen, text="").pack()
+            Label(self.opt_screen, text="Purchase/Sell Stock (Type ticker/amount below)").pack()
+            Entry(self.opt_screen, textvariable=self.port_entry_str).pack()
+            Entry(self.opt_screen, textvariable=self.port_amount_str).pack()
+            purchase_button = Button(self.opt_screen, text="Purchase")
+            sell_button = Button(self.opt_screen, text="Sell")
+            purchase_button.pack()
+            sell_button.pack()
+        else:
+            Label(self.opt_screen, text="You are not logged in or registered.", fg="red").pack()
 
     def google_search(self):
         try:
@@ -236,9 +261,6 @@ class MainGUI:
             temp_label = HTMLLabel(self.result_screen, html='<a href="' + j + '">' + j + '</a>', fg="blue")
             temp_label.config(height=5)
             temp_label.pack()
-
-    def port_options(self):
-        self.hide_main_widgets()
 
     def update_profile(self):
         if self.login_success:
@@ -269,6 +291,11 @@ class MainGUI:
         else:
             self.funds_entry_str.set("Invalid input")
 
+    def read_portfolio(self):
+        file = open("./users/" + self.session_user, "r")
+        data = file.readlines()
+        return list(data[3].split("-"))
+
     def hide_main_widgets(self):
         self.portfolio_button.grid()
         self.port_message.grid_remove()
@@ -297,11 +324,11 @@ class MainGUI:
         self.login_action_screen.withdraw()
         self.update_profile()
 
-    def reset_funds_screen(self):
-        for widget in self.funds_screen.winfo_children():
+    def reset_opt_screen(self):
+        for widget in self.opt_screen.winfo_children():
             widget.destroy()
         self.funds_entry_str.set("")
-        self.funds_screen.withdraw()
+        self.opt_screen.withdraw()
         self.update_profile()
 
     def reset_results(self):
