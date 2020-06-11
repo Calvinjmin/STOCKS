@@ -4,6 +4,7 @@ import os
 from tkinter import *
 from tkhtmlview import HTMLLabel
 import webbrowser
+import stock
 
 # REFERENCE STRINGS
 intro = """Welcome to STOCKS!
@@ -81,6 +82,7 @@ class MainGUI:
         ### Variables ###
         self.username = StringVar()
         self.password = StringVar()
+        self.current_funds = ""
 
         self.session_user = "NA"
         self.login_success = False
@@ -91,6 +93,10 @@ class MainGUI:
         self.port_entry_str.set("Ticker Symbol")
         self.port_amount_str = StringVar()
         self.port_amount_str.set("Numerical Amount")
+        self.port_results_str = StringVar()
+        self.port_results_str.set("")
+
+        self.port_numerical_amount = 0.00
 
         ### Widgets ###
 
@@ -238,12 +244,55 @@ class MainGUI:
             Label(self.opt_screen, text="Purchase/Sell Stock (Type ticker/amount below)").pack()
             Entry(self.opt_screen, textvariable=self.port_entry_str).pack()
             Entry(self.opt_screen, textvariable=self.port_amount_str).pack()
-            purchase_button = Button(self.opt_screen, text="Purchase")
-            sell_button = Button(self.opt_screen, text="Sell")
-            purchase_button.pack()
-            sell_button.pack()
+            Button(self.opt_screen, text="Purchase",command=self.purchase_stock).pack()
+            Button(self.opt_screen, text="Sell").pack()
+            Label(self.opt_screen, textvariable=self.port_results_str)
         else:
             Label(self.opt_screen, text="You are not logged in or registered.", fg="red").pack()
+
+    def purchase_stock(self):
+        self.result_screen.deiconify()
+        try:
+            pur_stock = stock.Stock(self.port_entry_str.get().upper())
+            print(pur_stock.get_name() + str(pur_stock.get_price()))
+            try:
+                self.port_numerical_amount = float(pur_stock.get_price()) * float(self.port_amount_str.get())
+                print(str(self.port_numerical_amount))
+                if float(self.current_funds) >= self.port_numerical_amount:
+                    self.result_screen.title("Confirmation")
+                    self.result_screen.geometry("500x250")
+                    Label(self.result_screen, text="Do you want to complete the following transaction?").pack()
+                    Label(self.result_screen, text="Current Funds: " + self.current_funds).pack()
+                    Label(self.result_screen, text=pur_stock.get_name() +
+                                " Price: $ " + str(float(pur_stock.get_price()) * float(self.port_amount_str.get()))).pack()
+                    Button(self.result_screen, text="YES",command=self.confirm_purchase).pack()
+                    Button(self.result_screen, text="NO").pack()
+            except ValueError:
+                Label(self.result_screen, text="Invalid Amount, must be a float", fg="red")
+        except (AttributeError, IndexError):
+            Label(self.result_screen, text="Invalid Ticker", fg="red").pack()
+
+    def confirm_purchase(self):
+        file = open("./users/" + self.session_user, "r")
+        data = file.readlines()
+        data[2] = str(float(data[2]) - float(self.port_numerical_amount))
+        self.current_funds = data[2]
+
+        current_port = list(tuple(data[3].split(" ")))
+        print(current_port)
+        in_port = False
+        for temp_stock in current_port:
+            ## STUCK: cannot convert "(TSLA,1)" to a tuple
+            (ticker,amount) = tuple(temp_stock)
+            if ticker == self.port_entry_str.get():
+                amount += float(self.port_amount_str.get())
+                in_port = True
+        if in_port is False:
+            data[3] = data[3] + "-(" + self.port_entry_str.get() + "," + self.port_amount_str.get() +")"
+
+        file = open("./users/" + self.session_user, "w")
+        file.writelines(data)
+
 
     def google_search(self):
         try:
@@ -267,7 +316,8 @@ class MainGUI:
             file = open("./users/" + self.session_user, "r")
             file.readline()
             file.readline()
-            self.profile_str.set("Current Funds: $" + file.readline() + "\nCurrent User: " + self.session_user)
+            self.current_funds = file.readline()
+            self.profile_str.set("Current Funds: $" + self.current_funds + "\nCurrent User: " + self.session_user)
         else:
             self.profile_str.set(
                 "Current Funds: $" + str(self.money.get_funds()) + "\nCurrent User: " + self.session_user)
@@ -279,6 +329,7 @@ class MainGUI:
                 file = open("./users/" + self.session_user, "r")
                 data = file.readlines()
                 data[2] = str(float(data[2]) + float(self.funds_entry_str.get()))
+                self.current_funds = data[2]
 
                 file = open("./users/" + self.session_user, "w")
                 file.writelines(data)
@@ -294,7 +345,7 @@ class MainGUI:
     def read_portfolio(self):
         file = open("./users/" + self.session_user, "r")
         data = file.readlines()
-        return list(data[3].split("-"))
+        return list(data[3].split(" "))
 
     def hide_main_widgets(self):
         self.portfolio_button.grid()

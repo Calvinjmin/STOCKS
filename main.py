@@ -58,7 +58,6 @@ def main():
             google_search_keyword()
         elif option == 'gui':
             gui.main(m, port, wl)
-            print("This feature has not been implemented yet!")
         elif option == 'quit':
             return
         m.print_funds()
