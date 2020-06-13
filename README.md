@@ -15,6 +15,10 @@ I started this small project to work with an open-source API and learn how to pr
 - Created a graphical user interface for STOCKS
 - Implemented a file login system
 
+### In-Progress
+- Integrating a portfolio and watch list in gui.py
+- Optimizing the log-in system for any user
+
 ### Future
 -  **Integrate main.py with gui.py (Implement Functionality)**
 -  Link script to an open-source news outlet about stocks
