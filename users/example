@@ -1,4 +1,5 @@
 example
 password
 0.00
-['TSLA',1'
+('TSLA',1)
+('GOOGL',1)

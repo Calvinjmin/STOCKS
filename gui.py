@@ -96,6 +96,7 @@ class MainGUI:
         self.port_results_str = StringVar()
         self.port_results_str.set("")
 
+        self.portfolio = []
         self.port_numerical_amount = 0.00
 
         ### Widgets ###
@@ -238,13 +239,13 @@ class MainGUI:
         self.opt_screen.title("Portfolio")
         if self.login_success:
             Label(self.opt_screen, text="Current Portfolio").pack()
-            temp_port = self.read_portfolio()
-            Label(self.opt_screen, text=str(temp_port)).pack()
+            self.read_portfolio()
+            Label(self.opt_screen, text=str(self.portfolio)).pack()
             Label(self.opt_screen, text="").pack()
             Label(self.opt_screen, text="Purchase/Sell Stock (Type ticker/amount below)").pack()
             Entry(self.opt_screen, textvariable=self.port_entry_str).pack()
             Entry(self.opt_screen, textvariable=self.port_amount_str).pack()
-            Button(self.opt_screen, text="Purchase",command=self.purchase_stock).pack()
+            Button(self.opt_screen, text="Purchase", command=self.purchase_stock).pack()
             Button(self.opt_screen, text="Sell").pack()
             Label(self.opt_screen, textvariable=self.port_results_str)
         else:
@@ -264,8 +265,9 @@ class MainGUI:
                     Label(self.result_screen, text="Do you want to complete the following transaction?").pack()
                     Label(self.result_screen, text="Current Funds: " + self.current_funds).pack()
                     Label(self.result_screen, text=pur_stock.get_name() +
-                                " Price: $ " + str(float(pur_stock.get_price()) * float(self.port_amount_str.get()))).pack()
-                    Button(self.result_screen, text="YES",command=self.confirm_purchase).pack()
+                                                   " Price: $ " + str(
+                        float(pur_stock.get_price()) * float(self.port_amount_str.get()))).pack()
+                    Button(self.result_screen, text="YES", command=self.confirm_purchase).pack()
                     Button(self.result_screen, text="NO").pack()
             except ValueError:
                 Label(self.result_screen, text="Invalid Amount, must be a float", fg="red")
@@ -275,24 +277,31 @@ class MainGUI:
     def confirm_purchase(self):
         file = open("./users/" + self.session_user, "r")
         data = file.readlines()
-        data[2] = str(float(data[2]) - float(self.port_numerical_amount))
+        data[2] = str(round(float(data[2]) - float(self.port_numerical_amount),2)) + "\n"
         self.current_funds = data[2]
-
-        current_port = list(tuple(data[3].split(" ")))
-        print(current_port)
         in_port = False
-        for temp_stock in current_port:
-            ## STUCK: cannot convert "(TSLA,1)" to a tuple
-            (ticker,amount) = tuple(temp_stock)
-            if ticker == self.port_entry_str.get():
-                amount += float(self.port_amount_str.get())
-                in_port = True
+        self.read_portfolio()
+
+        iterate = 0
+        for string in data:
+            if iterate >= 3:
+                (ticker, amount) = eval(string)
+                if ticker == self.port_entry_str.get():
+                    temp = list(eval(string))
+                    temp[1] += float(self.port_amount_str.get())
+                    data[iterate] = str(tuple(temp))+"\n"
+                    print(data[iterate])
+                    print(temp)
+                    in_port = True
+            iterate += 1
         if in_port is False:
-            data[3] = data[3] + "-(" + self.port_entry_str.get() + "," + self.port_amount_str.get() +")"
+            data.append("('" + self.port_entry_str.get() + "'," + self.port_amount_str.get() + ")\n")
 
+        Label(self.result_screen, text=self.port_entry_str.get() + " was added to your portfolio.", fg="green").pack()
         file = open("./users/" + self.session_user, "w")
-        file.writelines(data)
-
+        for line in data:
+            print(line)
+            file.write(line)
 
     def google_search(self):
         try:
@@ -328,7 +337,7 @@ class MainGUI:
             if self.session_user in list_of_files:
                 file = open("./users/" + self.session_user, "r")
                 data = file.readlines()
-                data[2] = str(float(data[2]) + float(self.funds_entry_str.get()))
+                data[2] = str(float(data[2]) + float(self.funds_entry_str.get())) + "\n"
                 self.current_funds = data[2]
 
                 file = open("./users/" + self.session_user, "w")
@@ -345,7 +354,9 @@ class MainGUI:
     def read_portfolio(self):
         file = open("./users/" + self.session_user, "r")
         data = file.readlines()
-        return list(data[3].split(" "))
+        self.portfolio = []
+        for i in range(3, len(data)):
+            self.portfolio.append(eval(data[i]))
 
     def hide_main_widgets(self):
         self.portfolio_button.grid()
