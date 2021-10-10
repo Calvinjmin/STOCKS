@@ -1,0 +1,9 @@
+# IDE Files
+.idea
+.vscode
+
+# Cache Files
+__pycache__
+
+# Local Users
+users/*
